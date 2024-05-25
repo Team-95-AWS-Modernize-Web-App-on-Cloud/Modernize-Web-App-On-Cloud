@@ -35,8 +35,11 @@ phases:
   pre_build:
       commands:
 
-        # - pip3 install -r requirements.txt
-        # - python3 -m pytest
+        - echo Detecting changed directories...
+        # - CHANGED_DIRS=$(git diff --name-only HEAD~1 | grep / | cut -d/ -f1 | sort -u)
+        - CHANGED_DIRS=$(git diff --name-only HEAD^1 | xargs -n 1 dirname | sort -u)
+
+        - echo "Changed directories is $CHANGED_DIRS"
         - TAG="$REPOSITORY_NAME.$REPOSITORY_BRANCH.$ENVIRONMENT_NAME.$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
         # - sed -i 's@CONTAINER_IMAGE@'"$REPOSITORY_URI:$TAG"'@' simple_jwt_api.yml
         - pwd
@@ -50,35 +53,52 @@ phases:
         
         - cat ~/.ssh/id_ed25519
         - ssh-add ~/.ssh/id_ed25519
-        - git clone git@github.com:minhquanvus1/cd0157-Server-Deployment-and-Containerization.git 
-        - cd cd0157-Server-Deployment-and-Containerization
+        - git clone git@github.com:Team-95-AWS-Modernize-Web-App-on-Cloud/Kubernetes-Deployment.git
+        - cd Kubernetes-Deployment
         - git remote -v
         - git status
         - git branch
-        - sed -i 's@^\(\s*image:\s*\).*$@\1'"$REPOSITORY_URI:$TAG"'@' simple_jwt_api.yml
-        - cat simple_jwt_api.yml
-        - git status
-        - git add simple_jwt_api.yml
-        - git commit -m "Update simple_jwt_api.yml with the new Docker Image Tag $TAG"
-        - git push origin "$REPOSITORY_BRANCH"
+
+
+        # - sed -i 's@^\(\s*image:\s*\).*$@\1'"$REPOSITORY_URI:$TAG"'@' deployment.yml
+        # - cat deployment.yml
+        # - git status
+        # - git add deployment.yml
+        # - git commit -m "Update deployment.yml with the new Docker Image Tag $TAG"
+        # - git push origin "$REPOSITORY_BRANCH"
 
         - $(aws ecr get-login --no-include-email)
         - export KUBECONFIG=$HOME/.kube/config
         - echo `ls -l`
   build:
     commands:
-      - docker build --tag $REPOSITORY_URI:$TAG .
+      - for dir in $CHANGED_DIRS; do
+          if [ -d "$dir" ]; then
+            cd $dir
+            if [ -f "Dockerfile" ]; then
+              docker build --tag $REPOSITORY_URI:$TAG .
+              docker push $REPOSITORY_URI:$TAG
+              sed -i 's@^\(\s*image:\s*\).*$@\1'"$REPOSITORY_URI:$TAG"'@' deployment.yml
+              
+              git add deployment.yml
+              git commit -m "Update deployment.yml with the new Docker Image Tag $TAG"
+            fi
+            cd -
+          fi
+        done
 
   post_build:
     commands:
-      - docker push $REPOSITORY_URI:$TAG
+      # - docker push $REPOSITORY_URI:$TAG
+      - git push origin "$REPOSITORY_BRANCH"
+
       - echo $EKS_CLUSTER_NAME
       - echo $EKS_KUBECTL_ROLE_ARN
       - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --role-arn $EKS_KUBECTL_ROLE_ARN
-      - kubectl apply -f simple_jwt_api.yml
+      # - kubectl apply -f deployment.yml
       - pwd
-      - cd .. 
-      - printf '[{"name":"simple_jwt_api","imageUri":"%s"}]' $REPOSITORY_URI:$TAG > build.json
+      - cd ../.. 
+      - printf '[{"name":"deployment","imageUri":"%s"}]' $REPOSITORY_URI:$TAG > build.json
 artifacts:
   files: build.json
 env:
