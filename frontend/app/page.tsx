@@ -8,7 +8,7 @@ export const projects = [
     title: "Event Booking",
     description:
       "A platform that allows users to book events, concerts, and shows.",
-    link: "https://stripe.com",
+    link: "/events",
   },
   {
     title: "Expense Tracker",
@@ -18,10 +18,10 @@ export const projects = [
   },
 ];
 
-export default function Home() {
+export default function Dashboard() {
   return (
     <main className="flex w-full flex-col gap-5">
-      <PageTitle title="Dashboard" className="px-5 md:px-0"/>
+      <PageTitle title="Dashboard" className="px-5 md:px-0" />
       <div className="mx-auto max-w-5xl lg:px-8">
         <HoverEffect items={projects} />
       </div>
