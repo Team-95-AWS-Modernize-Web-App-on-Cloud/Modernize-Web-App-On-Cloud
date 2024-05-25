@@ -58,7 +58,7 @@ export default function SideNavbar({}: Props) {
             variant: "ghost",
           },
           {
-            title: "Ordrs",
+            title: "Orders",
             href: "/orders",
             icon: ShoppingCart,
             variant: "ghost",
