@@ -10,7 +10,7 @@ import {
   LayoutDashboard,
   UsersRound,
   Settings,
-  ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -36,7 +36,7 @@ export default function SideNavbar({}: Props) {
             variant="secondary"
             className="rounded-full p-2"
           >
-            <ChevronRight
+            <ChevronLeft
               className={`transition-transform duration-300 ease-in-out ${isCollapsed ? "rotate-180" : "rotate-0"}`}
             />
           </Button>
@@ -47,25 +47,25 @@ export default function SideNavbar({}: Props) {
         links={[
           {
             title: "Dashboard",
-            href: "/",
+            href: "/dashboard",
             icon: LayoutDashboard,
             variant: "default",
           },
           {
             title: "Users",
-            href: "/users",
+            href: "/dashboard/users",
             icon: UsersRound,
             variant: "ghost",
           },
           {
             title: "Orders",
-            href: "/orders",
+            href: "/dashboard/orders",
             icon: ShoppingCart,
             variant: "ghost",
           },
           {
             title: "Settings",
-            href: "/settings",
+            href: "/dashboard/settings",
             icon: Settings,
             variant: "ghost",
           },

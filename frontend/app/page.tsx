@@ -1,30 +1,40 @@
-"use client";
-
-import PageTitle from "@/components/PageTitle";
-import { HoverEffect } from "@/components/ui/card-hover-effect";
-
-export const projects = [
+import { Button } from "@/components/ui/button";
+import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
+import Link from "next/link";
+const words = [
   {
-    title: "Event Booking",
-    description:
-      "A platform that allows users to book events, concerts, and shows.",
-    link: "/events",
+    text: "Build",
   },
   {
-    title: "Expense Tracker",
-    description:
-      "A platform that allows users to track their expenses and manage their finances.",
-    link: "https://netflix.com",
+    text: "awesome",
+  },
+  {
+    text: "apps",
+  },
+  {
+    text: "with",
+  },
+  {
+    text: "AWS.",
+    className: "text-orange-500 dark:text-orange-500",
   },
 ];
 
-export default function Dashboard() {
+export default function Main() {
   return (
-    <main className="flex w-full flex-col gap-5">
-      <PageTitle title="Dashboard" className="px-5 md:px-0" />
-      <div className="mx-auto max-w-5xl lg:px-8">
-        <HoverEffect items={projects} />
+    <div className="flex h-[40rem] flex-col items-center justify-center  ">
+      <p className="text-xs text-neutral-600 dark:text-neutral-200 sm:text-base  ">
+        The road to freedom starts from here
+      </p>
+      <TypewriterEffectSmooth words={words} />
+      <div className="flex flex-col space-x-0 space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+        <Button variant={"default"}>
+          <Link href="/auth/login">Join Us Now</Link>
+        </Button>
+        <Button variant={"outline"}>
+          <Link href="/auth/register">Learn More</Link>
+        </Button>
       </div>
-    </main>
+    </div>
   );
 }

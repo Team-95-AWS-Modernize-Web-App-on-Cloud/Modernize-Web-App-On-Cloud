@@ -7,6 +7,7 @@ const SideNavbar = dynamic(() => import("@/components/SideNavbar"), {
   ssr: false,
 });
 import { ThemeProvider } from "@/components/theme-provider";
+import CongigureAmplifyClientSide from "./amplify-cognito-config";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -27,7 +28,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "flex min-h-screen w-full bg-background font-sans antialiased",
+          "min-h-screen w-full bg-background font-sans antialiased",
           fontSans.variable,
         )}
       >
@@ -37,10 +38,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* Sidebar */}
-          <SideNavbar />
-          {/* Main page */}
-          <div className="w-full py-8 md:p-8">{children}</div>
+          <CongigureAmplifyClientSide />
+          {children}
         </ThemeProvider>
       </body>
     </html>
