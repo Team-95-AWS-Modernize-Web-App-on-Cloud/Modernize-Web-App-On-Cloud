@@ -21,14 +21,19 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String event_name;
+    @Column(name = "event_name")
+    private String eventName;
 
-    private String event_type;
+    @Column(name = "event_type")
+    private String eventType;
 
-    private String event_address;
+    @Column(name = "event_address")
+    private String eventAddress;
 
-    private String event_description;
+    @Column(name = "event_description")
+    private String eventDescription;
 
+    @Column(name = "event_time")
     private LocalDateTime event_time;
 
     private BigDecimal price;
