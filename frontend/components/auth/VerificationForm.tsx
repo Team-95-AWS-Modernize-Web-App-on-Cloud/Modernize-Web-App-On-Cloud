@@ -2,8 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,38 +17,49 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { Input } from "@/components/ui/input";
-import { RegisterSchema, RegisterType } from "@/schema/auth.schema";
-import { handleSignUp } from "@/lib/cognitoActions";
+import { VerificationSchema, VerificationType } from "@/schema/auth.schema";
+import { handleConfirmSignUp } from "@/lib/cognitoActions";
 
-export function RegisterForm() {
+export function VerificationForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const form = useForm<RegisterType>({
-    resolver: zodResolver(RegisterSchema),
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
+
+  const form = useForm<VerificationType>({
+    resolver: zodResolver(VerificationSchema),
     defaultValues: {
-      email: "",
-      name: "",
-      password: "",
-      confirmPassword: "",
+      email: email ? String(email) : "",
+      code: "",
     },
   });
 
-  const onSubmit = async (data: RegisterType) => {
+  useEffect(() => {
+    if (email) {
+      form.setValue("email", String(email));
+    }
+  }, [email, form]);
+
+  const onSubmit = async (data: VerificationType) => {
     setLoading(true);
     const formData = new FormData();
     formData.append("email", data.email);
-    formData.append("name", data.name);
-    formData.append("password", data.password);
-    formData.append("confirmPassword", data.confirmPassword);
+    formData.append("code", data.code);
     try {
-      await handleSignUp(formData);
-      router.push(`/auth/verify?email=${data.email}`);
+      await handleConfirmSignUp(formData);
     } catch (error) {
       // Handle error (e.g., show error message)
     } finally {
@@ -59,9 +70,9 @@ export function RegisterForm() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-xl">Sign Up</CardTitle>
+        <CardTitle className="text-xl">Verify Your Account</CardTitle>
         <CardDescription>
-          Enter your information to create an account
+          Enter the verification code sent to your email
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -73,25 +84,12 @@ export function RegisterForm() {
           >
             <FormField
               control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nguyen A" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="abc@mail.com" type="email" {...field} />
+                    <Input placeholder="abc@mail.com" type="email" {...field} disabled/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -99,41 +97,43 @@ export function RegisterForm() {
             />
             <FormField
               control={form.control}
-              name="password"
+              name="code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Verification Code</FormLabel>
                   <FormControl>
-                    <Input placeholder="****" type="password" {...field} />
+                    <InputOTP maxLength={6} {...field}>
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                      </InputOTPGroup>
+                      <InputOTPSeparator />
+                      <InputOTPGroup>
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder="****" type="password" {...field} />
-                  </FormControl>
+                  <FormDescription>
+                    Please enter the verification code sent to your email.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <Button type="submit" className="!mt-5 w-full" disabled={loading}>
-              {loading ? "Signing up..." : "Sign Up"}
+              {loading ? "Verifying..." : "Verify"}
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter>
         <div className="mt-4 text-center text-sm">
-          Already have an account?{" "}
-          <Link href="/auth/login" className="underline">
-            Sign in
+          Didn't receive a code?{" "}
+          <Link href="/auth/resend-code" className="underline">
+            Resend Code
           </Link>
         </div>
       </CardFooter>

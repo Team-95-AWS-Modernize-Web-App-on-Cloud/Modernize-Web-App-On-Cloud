@@ -8,6 +8,7 @@ const SideNavbar = dynamic(() => import("@/components/SideNavbar"), {
 });
 import { ThemeProvider } from "@/components/theme-provider";
 import CongigureAmplifyClientSide from "./amplify-cognito-config";
+import { Toaster } from "@/components/ui/toaster";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
+        <Toaster />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
