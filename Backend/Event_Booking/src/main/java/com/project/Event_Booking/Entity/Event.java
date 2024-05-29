@@ -34,7 +34,7 @@ public class Event {
     private String eventDescription;
 
     @Column(name = "event_time")
-    private LocalDateTime event_time;
+    private LocalDateTime eventTime;
 
     private BigDecimal price;
 }
