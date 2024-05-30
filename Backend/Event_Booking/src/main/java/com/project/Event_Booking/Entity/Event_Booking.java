@@ -1,10 +1,7 @@
 package com.project.Event_Booking.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -12,6 +9,7 @@ import lombok.Setter;
 @Table(name = "Event_Booking")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Event_Booking {
 
     @Id
@@ -27,4 +25,9 @@ public class Event_Booking {
 
     @Column(name = "user_id")
     private Integer userId;
+
+    public Event_Booking(Integer eventId, Integer userId) {
+        this.eventId = eventId;
+        this.userId = userId;
+    }
 }
