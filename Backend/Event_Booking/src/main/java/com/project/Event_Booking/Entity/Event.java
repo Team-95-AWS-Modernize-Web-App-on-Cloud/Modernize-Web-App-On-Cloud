@@ -25,6 +25,9 @@ public class Event {
     @Column(name = "event_name")
     private String eventName;
 
+    @Column(name = "event_image")
+    private String eventImage;
+
     @Column(name = "event_type")
     private String eventType;
 
