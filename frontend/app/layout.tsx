@@ -1,11 +1,7 @@
-import dynamic from "next/dynamic";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-const SideNavbar = dynamic(() => import("@/components/SideNavbar"), {
-  ssr: false,
-});
 import { ThemeProvider } from "@/components/theme-provider";
 import CongigureAmplifyClientSide from "./amplify-cognito-config";
 import { Toaster } from "@/components/ui/toaster";

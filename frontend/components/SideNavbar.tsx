@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { ModeToggle } from "@/components/ModeToggle";
+import SignOut from "@/components/auth/SignOut";
 
 import { useWindowWidth } from "@react-hook/window-size";
 
@@ -28,7 +29,7 @@ export default function SideNavbar({}: Props) {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-between border-r lg:px-3 pt-20 transition-all duration-300 ease-in-out">
+    <div className="relative flex flex-col items-center justify-between border-r pt-20 transition-all duration-300 ease-in-out lg:px-3">
       {!mobileWidth && (
         <div className="absolute right-[-20px] top-7">
           <Button
@@ -71,7 +72,10 @@ export default function SideNavbar({}: Props) {
           },
         ]}
       />
-      <ModeToggle />
+      <div className="flex flex-col items-center justify-center gap-5">
+        <ModeToggle />
+        <SignOut />
+      </div>
     </div>
   );
 }

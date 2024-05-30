@@ -30,13 +30,16 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Input } from "@/components/ui/input";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 import { VerificationSchema, VerificationType } from "@/schema/auth.schema";
 import { handleConfirmSignUp } from "@/lib/cognitoActions";
 
 export function VerificationForm() {
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const email = searchParams.get("email");
 
   const form = useForm<VerificationType>({
@@ -59,9 +62,29 @@ export function VerificationForm() {
     formData.append("email", data.email);
     formData.append("code", data.code);
     try {
-      await handleConfirmSignUp(formData);
+      const result = await handleConfirmSignUp(formData);
+      if (result.nextStep?.signUpStep === "DONE") {
+        toast({
+          variant: "default",
+          title: "Account verified",
+          description: "You have successfully verified your account.",
+        });
+        router.push("/auth/login");
+      } else if (result.nextStep?.signUpStep === "COMPLETE_AUTO_SIGN_IN") {
+        toast({
+          variant: "default",
+          title: "Account verified",
+          description: "You have successfully verified your account.",
+        });
+        router.push("/dashboard");
+      }
     } catch (error) {
-      // Handle error (e.g., show error message)
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong",
+        description: "There was a problem with your request.",
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
     } finally {
       setLoading(false);
     }
@@ -89,7 +112,12 @@ export function VerificationForm() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="abc@mail.com" type="email" {...field} disabled/>
+                    <Input
+                      placeholder="abc@mail.com"
+                      type="email"
+                      {...field}
+                      disabled
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

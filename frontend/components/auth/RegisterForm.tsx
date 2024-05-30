@@ -23,10 +23,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import { RegisterSchema, RegisterType } from "@/schema/auth.schema";
 import { handleSignUp } from "@/lib/cognitoActions";
 
 export function RegisterForm() {
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const form = useForm<RegisterType>({
@@ -47,10 +49,21 @@ export function RegisterForm() {
     formData.append("password", data.password);
     formData.append("confirmPassword", data.confirmPassword);
     try {
-      await handleSignUp(formData);
-      router.push(`/auth/verify?email=${data.email}`);
+      const result = await handleSignUp(formData);
+      if (result.nextStep?.signUpStep === "CONFIRM_SIGN_UP") {
+        toast({
+          variant: "default",
+          title: "Sign up successfully!",
+          description: "Please check your email for the verification code",
+        });
+        router.push(`/auth/verify?email=${data.email}`);
+      }
     } catch (error) {
-      // Handle error (e.g., show error message)
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      });
     } finally {
       setLoading(false);
     }

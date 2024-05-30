@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,11 +23,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import { LoginSchema, LoginType } from "@/schema/auth.schema";
 import { handleSignIn } from "@/lib/cognitoActions";
 
 export function LoginForm() {
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const form = useForm<LoginType>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -41,9 +45,29 @@ export function LoginForm() {
     formData.append("email", data.email);
     formData.append("password", data.password);
     try {
-      await handleSignIn(formData);
+      const result = await handleSignIn(formData);
+      if (result.redirectLink == "/dashboard") {
+        toast({
+          variant: "default",
+          title: "Login successfully!",
+          description: "Welcome back to your account",
+        });
+        router.push(result.redirectLink);
+      } else if (result.redirectLink == `/auth/verify?email=${data.email}`) {
+        toast({
+          variant: "default",
+          title: "Action required!",
+          description: "Please check your email for the verification code",
+        });
+        router.push(result.redirectLink);
+      }
     } catch (error) {
       console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: "Please check your credentials and try again.",
+      });
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import {
   signUp,
   confirmSignUp,
@@ -22,10 +21,10 @@ export async function handleSignUp(formData: FormData) {
         autoSignIn: true,
       },
     });
+    return { nextStep, email: formData.get("email") };
   } catch (error) {
-    return getErrorMessage(error);
+    return { error: getErrorMessage(error) };
   }
-  redirect(`/auth/verify?email=${formData.get("email")}`);
 }
 
 export async function handleSendEmailVerificationCode(formData: FormData) {
@@ -44,10 +43,10 @@ export async function handleConfirmSignUp(formData: FormData) {
       username: String(formData.get("email")),
       confirmationCode: String(formData.get("code")),
     });
+    return { nextStep };
   } catch (error) {
-    return getErrorMessage(error);
+    return { error: getErrorMessage(error) };
   }
-  redirect("/auth/login");
 }
 
 export async function handleSignIn(formData: FormData) {
@@ -61,12 +60,14 @@ export async function handleSignIn(formData: FormData) {
       await resendSignUpCode({
         username: String(formData.get("email")),
       });
-      redirectLink = "/auth/confirm-signup";
+      redirectLink = `/auth/verify?email=${formData.get("email")}`;
+    } else if (nextStep.signInStep === "DONE") {
+      redirectLink = "/dashboard";
     }
+    return { redirectLink };
   } catch (error) {
-    return getErrorMessage(error);
+    return { error: getErrorMessage(error) };
   }
-  redirect(redirectLink);
 }
 
 export async function handleSignOut() {
@@ -75,5 +76,4 @@ export async function handleSignOut() {
   } catch (error) {
     console.log(getErrorMessage(error));
   }
-  redirect("/auth/login");
 }
