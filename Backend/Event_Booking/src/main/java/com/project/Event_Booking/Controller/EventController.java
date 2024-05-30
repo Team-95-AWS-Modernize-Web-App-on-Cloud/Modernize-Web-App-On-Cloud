@@ -3,6 +3,7 @@ package com.project.Event_Booking.Controller;
 import com.project.Event_Booking.Entity.Event;
 import com.project.Event_Booking.Service.EventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,9 +24,12 @@ public class EventController {
     }
 
     @PostMapping("/events")
-    public ResponseEntity<Map<String, Event>> createAnEvent(@RequestBody Event event) {
-        Event createdEvent = eventService.createAnEvent(event);
-        return ResponseEntity.ok(Map.of("createdEvent", createdEvent));
+    public ResponseEntity<?> createAnEvent(@RequestBody Event event) {
+        Optional<Event> createdEvent = eventService.createAnEvent(event);
+        if(!createdEvent.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Event already exists");
+        }
+        return ResponseEntity.ok(Map.of("createdEvent", createdEvent.get()));
     }
 
     @GetMapping("/events/{id}")
