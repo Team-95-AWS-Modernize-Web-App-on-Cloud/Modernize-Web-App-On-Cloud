@@ -37,4 +37,14 @@ public class EventController {
         Optional<Event> foundEvent = eventService.findEventById(id);
         return foundEvent.map(event -> ResponseEntity.ok(Map.of("foundEvent", event))).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @DeleteMapping("/events/{id}")
+    public ResponseEntity<Map<String, ?>> deleteEventById(@PathVariable Integer id) {
+        Optional<Event> foundEvent = eventService.findEventById(id);
+        if(!foundEvent.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "This Event does not exist"));
+        }
+        eventService.deleteEventById(id);
+        return ResponseEntity.ok(Map.of("deletedEventId", id));
+    }
 }
