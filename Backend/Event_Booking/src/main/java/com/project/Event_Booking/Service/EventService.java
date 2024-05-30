@@ -30,4 +30,8 @@ public class EventService {
     public Optional<Event> findEventById(Integer id) {
         return eventRepository.findById(id);
     }
+
+    public void deleteEventById(Integer id) {
+        eventRepository.deleteById(id);
+    }
 }
