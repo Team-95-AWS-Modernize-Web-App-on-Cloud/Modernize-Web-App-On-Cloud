@@ -18,8 +18,13 @@ public class EventService {
         return eventRepository.findAll();
     }
 
-    public Event createAnEvent(Event event) {
-        return eventRepository.save(event);
+    public Optional<Event> createAnEvent(Event event) {
+
+        boolean existEvent = eventRepository.existsByEventNameAndEventTime(event.getEventName(), event.getEventTime());
+        if(existEvent) {
+            return Optional.empty();
+        }
+        return Optional.of(eventRepository.save(event));
     }
 
     public Optional<Event> findEventById(Integer id) {
