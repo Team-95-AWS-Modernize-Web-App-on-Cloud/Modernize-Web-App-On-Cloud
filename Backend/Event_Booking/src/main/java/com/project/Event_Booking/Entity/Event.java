@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,4 +38,7 @@ public class Event {
     private LocalDateTime eventTime;
 
     private BigDecimal price;
+
+//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+//    private List<Event_Booking> eventBookingList;
 }
