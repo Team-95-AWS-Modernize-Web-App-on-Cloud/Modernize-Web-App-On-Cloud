@@ -72,7 +72,7 @@ phases:
         - git remote -v
         - git status
         - git branch
-        - cd ../Modernize-Web-App-On-Cloud/Backend
+        - cd ../Modernize-Web-App-On-Cloud
         # - for dir in $CHANGED_DIRS; do
         #   if [ -d "$dir" ]; then
         #     cd $dir
