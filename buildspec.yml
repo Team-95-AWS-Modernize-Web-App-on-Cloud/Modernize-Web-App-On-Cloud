@@ -73,25 +73,44 @@ phases:
         - git status
         - git branch
         - cd ../Modernize-Web-App-On-Cloud/Backend
-        - for dir in $CHANGED_DIRS; do
-          if [ -d "$dir" ]; then
-            cd $dir
-            if [ -f "Dockerfile" ]; then
-              TAG="$REPOSITORY_NAME.$REPOSITORY_BRANCH.$ENVIRONMENT_NAME.$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
-              docker build --tag $REPOSITORY_URI:$TAG .
-              docker push $REPOSITORY_URI:$TAG
-              cd ../../Kubernetes-Deployment
-              cd $dir
-              sed -i 's@^\(\s*image:\s*\).*$@\1'"$REPOSITORY_URI:$TAG"'@' deployment.yml
+        # - for dir in $CHANGED_DIRS; do
+        #   if [ -d "$dir" ]; then
+        #     cd $dir
+        #     if [ -f "Dockerfile" ]; then
+        #       TAG="$REPOSITORY_NAME.$REPOSITORY_BRANCH.$ENVIRONMENT_NAME.$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
+        #       docker build --tag $REPOSITORY_URI:$TAG .
+        #       docker push $REPOSITORY_URI:$TAG
+        #       cd ../../Kubernetes-Deployment
+        #       cd $dir
+        #       sed -i 's@^\(\s*image:\s*\).*$@\1'"$REPOSITORY_URI:$TAG"'@' deployment.yml
               
-              git add deployment.yml
-              git commit -m "Update deployment.yml with the new Docker Image Tag $TAG"
-              cd ../../Modernize-Web-App-On-Cloud/Backend
-              cd $dir
-            fi
-            cd -
-          fi
-        done
+        #       git add deployment.yml
+        #       git commit -m "Update deployment.yml with the new Docker Image Tag $TAG"
+        #       cd ../../Modernize-Web-App-On-Cloud/Backend
+        #       cd $dir
+        #     fi
+        #     cd -
+        #   fi
+        # done
+        - |
+            for dir in $CHANGED_DIRS; do
+              if [ -d "$dir" ]; then
+                cd $dir
+                if [ -f "Dockerfile" ]; then
+                  TAG="$REPOSITORY_NAME.$REPOSITORY_BRANCH.$ENVIRONMENT_NAME.$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
+                  docker build --tag $REPOSITORY_URI:$TAG .
+                  docker push $REPOSITORY_URI:$TAG
+                  cd ../../Kubernetes-Deployment
+                  cd $dir
+                  sed -i 's@^\(\s*image:\s*\).*$@\1'"$REPOSITORY_URI:$TAG"'@' deployment.yml
+                  git add deployment.yml
+                  git commit -m "Update deployment.yml with the new Docker Image Tag $TAG"
+                  cd ../../Modernize-Web-App-On-Cloud/Backend
+                  cd $dir
+                fi
+                cd -
+              fi
+            done
 
         # - sed -i 's@^\(\s*image:\s*\).*$@\1'"$REPOSITORY_URI:$TAG"'@' deployment.yml
         # - cat deployment.yml
