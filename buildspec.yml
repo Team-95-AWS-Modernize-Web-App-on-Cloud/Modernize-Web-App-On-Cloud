@@ -37,8 +37,9 @@ phases:
 
         - echo Detecting changed directories...
         # - CHANGED_DIRS=$(git diff --name-only HEAD~1 | grep / | cut -d/ -f1 | sort -u)
+        - git diff --name-only HEAD^1 | xargs -n 1 dirname | sort -u
         - CHANGED_DIRS=$(git diff --name-only HEAD^1 | xargs -n 1 dirname | sort -u)
-
+        - git diff --name-only HEAD^1 | xargs -n 1 dirname | sort -u
         - echo "Changed directories is $CHANGED_DIRS"
         - TAG="$REPOSITORY_NAME.$REPOSITORY_BRANCH.$ENVIRONMENT_NAME.$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
         # - sed -i 's@CONTAINER_IMAGE@'"$REPOSITORY_URI:$TAG"'@' simple_jwt_api.yml
