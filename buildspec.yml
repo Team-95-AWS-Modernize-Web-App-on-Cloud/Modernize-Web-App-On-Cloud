@@ -57,7 +57,7 @@ phases:
         - cat /etc/passwd
         - pwd
         - echo $TAG
-        - git diff --name-only $$CODEBUILD_RESOLVED_SOURCE_VERSION $$CODEBUILD_WEBHOOK_PREV_COMMIT
+        - git diff --name-only $CODEBUILD_RESOLVED_SOURCE_VERSION $CODEBUILD_WEBHOOK_PREV_COMMIT
         # - git config --global user.email "17640@student.vgu.edu.vn"
         # - git config --global user.name "minhquanvus1"
         # - aws ssm get-parameter --name myPrivateKey --with-decryption | jq -r '.Parameter | .Value' > ~/.ssh/id_ed25519
