@@ -5,15 +5,14 @@ import com.project.Event_Booking.Entity.Event_Booking;
 import com.project.Event_Booking.Entity.ValidateJwtResponse;
 import com.project.Event_Booking.Service.EventBookingService;
 import com.project.Event_Booking.Service.EventService;
+import com.project.Event_Booking.Service.ValidateJwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -26,26 +25,14 @@ public class EventBookingController {
 
     private final EventBookingService eventBookingService;
     private final EventService eventService;
-    private final WebClient.Builder builder;
-
-    private Mono<ResponseEntity<?>> validateJwt(String jwt) {
-        WebClient webClient = builder.baseUrl("http://localhost:" + "8083").build();
-
-        return webClient.post()
-                .uri("/validate-jwt")
-                .header(HttpHeaders.AUTHORIZATION, jwt) // set JWT in header
-                .exchangeToMono(response -> {
-                    return response.bodyToMono(ValidateJwtResponse.class)
-                            .map(body -> ResponseEntity.status(response.statusCode()).body(body));
-                });
-    }
+    private final ValidateJwtService validateJwtService;
 
     @PostMapping("/book-event")
     public Mono<ResponseEntity<?>> bookAnEvent(@RequestBody Event_Booking event_booking, HttpServletRequest request) {
 
         String jwt = request.getHeader("Authorization");
 
-        return validateJwt(jwt).flatMap(validateJwtResponse -> {
+        return validateJwtService.validateJwt(jwt).flatMap(validateJwtResponse -> {
             if (validateJwtResponse.getStatusCode().is2xxSuccessful()) {
                 // If JWT is valid, proceed with fetching events
                 Optional<Event> event = eventService.findEventById(event_booking.getEventId());

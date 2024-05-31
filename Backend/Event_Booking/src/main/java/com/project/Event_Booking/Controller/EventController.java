@@ -3,15 +3,14 @@ package com.project.Event_Booking.Controller;
 import com.project.Event_Booking.Entity.Event;
 import com.project.Event_Booking.Entity.ValidateJwtResponse;
 import com.project.Event_Booking.Service.EventService;
+import com.project.Event_Booking.Service.ValidateJwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -23,33 +22,14 @@ import java.util.Optional;
 public class EventController {
 
     private final EventService eventService;
-    private final WebClient.Builder builder;
+    private final ValidateJwtService validateJwtService;
     private static final Logger LOGGER = LoggerFactory.getLogger(EventController.class);
-
-private Mono<ResponseEntity<?>> validateJwt(String jwt) {
-    WebClient webClient = builder.baseUrl("http://localhost:" + "8083").build();
-
-    return webClient.post()
-            .uri("/validate-jwt")
-            .header(HttpHeaders.AUTHORIZATION, jwt) // set JWT in header
-            .exchangeToMono(response -> {
-                return response.bodyToMono(ValidateJwtResponse.class)
-                        .map(body -> ResponseEntity.status(response.statusCode()).body(body));
-//                if (response.statusCode().is2xxSuccessful()) {
-//                    return response.bodyToMono(ValidateJwtResponse.class)
-//                            .map(body -> ResponseEntity.ok(body));
-//                } else {
-//                    return response.bodyToMono(ValidateJwtResponse.class)
-//                            .map(body -> ResponseEntity.status(response.statusCode()).body(body));
-//                }
-            });
-}
 
     @GetMapping("/events")
     public Mono<ResponseEntity<?>> getAllEvents(HttpServletRequest request) {
         String jwt = request.getHeader("Authorization"); // assuming JWT is passed in Authorization header
         LOGGER.info("jwt is {}", jwt);
-        return validateJwt(jwt).flatMap(validateJwtResponse -> {
+        return validateJwtService.validateJwt(jwt).flatMap(validateJwtResponse -> {
             if (validateJwtResponse.getStatusCode().is2xxSuccessful()) {
                 // If JWT is valid, proceed with fetching events
                 List<Event> events = eventService.findAllEvents();
@@ -68,7 +48,7 @@ private Mono<ResponseEntity<?>> validateJwt(String jwt) {
 
         String jwt = request.getHeader("Authorization");
 
-        return validateJwt(jwt).flatMap(validateJwtResponse -> {
+        return validateJwtService.validateJwt(jwt).flatMap(validateJwtResponse -> {
             if (validateJwtResponse.getStatusCode().is2xxSuccessful()) {
                 // If JWT is valid, proceed with fetching events
                 Optional<Event> createdEvent = eventService.createAnEvent(event);
@@ -90,7 +70,7 @@ private Mono<ResponseEntity<?>> validateJwt(String jwt) {
 
         String jwt = request.getHeader("Authorization");
 
-        return validateJwt(jwt).flatMap(validateJwtResponse -> {
+        return validateJwtService.validateJwt(jwt).flatMap(validateJwtResponse -> {
             if (validateJwtResponse.getStatusCode().is2xxSuccessful()) {
                 // If JWT is valid, proceed with fetching events
                 Optional<Event> foundEvent = eventService.findEventById(id);
@@ -109,7 +89,7 @@ private Mono<ResponseEntity<?>> validateJwt(String jwt) {
 
         String jwt = request.getHeader("Authorization");
 
-        return validateJwt(jwt).flatMap(validateJwtResponse -> {
+        return validateJwtService.validateJwt(jwt).flatMap(validateJwtResponse -> {
             if (validateJwtResponse.getStatusCode().is2xxSuccessful()) {
                 // If JWT is valid, proceed with fetching events
                 Optional<Event> foundEvent = eventService.findEventById(id);
