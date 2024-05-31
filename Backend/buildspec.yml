@@ -43,7 +43,7 @@ phases:
         - cat ~/.ssh/id_ed25519
         - ssh-add ~/.ssh/id_ed25519
         - git clone git@github.com:Team-95-AWS-Modernize-Web-App-on-Cloud/Modernize-Web-App-On-Cloud.git
-        - cd Modernize-Web-App-On-Cloud
+        - cd Modernize-Web-App-On-Cloud/Backend
         - cat /etc/passwd
         - pwd
         - echo Detecting changed directories...
@@ -66,6 +66,7 @@ phases:
         
         # - cat ~/.ssh/id_ed25519
         # - ssh-add ~/.ssh/id_ed25519
+        - cd ../..
         - git clone git@github.com:Team-95-AWS-Modernize-Web-App-on-Cloud/Kubernetes-Deployment.git
         - cd Kubernetes-Deployment
         - git remote -v
