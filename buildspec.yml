@@ -93,12 +93,15 @@ phases:
         #   fi
         # done
         - |
+            echo "Starting the for loop"
             for dir in $CHANGED_DIRS; do
+              echo "processing the $dir"
               if [ -d "$dir" ]; then
                 cd $dir
                 pwd
                 if [ -f "Dockerfile" ]; then
                   TAG="$REPOSITORY_NAME.$REPOSITORY_BRANCH.$ENVIRONMENT_NAME.$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
+                  echo "Building Docker image with tag $TAG"
                   docker build --tag $REPOSITORY_URI:$TAG .
                   docker push $REPOSITORY_URI:$TAG
                   cd ../../Kubernetes-Deployment
@@ -110,8 +113,12 @@ phases:
                   pwd
                   cd $dir
                   pwd
+                else
+                  echo "No Dockerfile found in $dir"
                 fi
                 cd -
+              else
+                echo "Directory $dir does not exist"
               fi
             done
 
