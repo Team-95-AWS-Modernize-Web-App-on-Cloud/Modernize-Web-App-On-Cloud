@@ -34,7 +34,15 @@ phases:
       - apt-get update && apt-get -y install jq  && pip install --upgrade awscli
   pre_build:
       commands:
+        - git config --global user.email "17640@student.vgu.edu.vn"
+        - git config --global user.name "minhquanvus1"
+        - aws ssm get-parameter --name myPrivateKey --with-decryption | jq -r '.Parameter | .Value' > ~/.ssh/id_ed25519
+        - chmod 600 ~/.ssh/id_ed25519
+        - eval "$(ssh-agent -s)"
         
+        - cat ~/.ssh/id_ed25519
+        - ssh-add ~/.ssh/id_ed25519
+        - git clone git@github.com:Team-95-AWS-Modernize-Web-App-on-Cloud/Modernize-Web-App-On-Cloud.git
         - cd Modernize-Web-App-On-Cloud
         - cat /etc/passwd
         - pwd
@@ -50,14 +58,14 @@ phases:
         - pwd
         - echo $TAG
 
-        - git config --global user.email "17640@student.vgu.edu.vn"
-        - git config --global user.name "minhquanvus1"
-        - aws ssm get-parameter --name myPrivateKey --with-decryption | jq -r '.Parameter | .Value' > ~/.ssh/id_ed25519
-        - chmod 600 ~/.ssh/id_ed25519
-        - eval "$(ssh-agent -s)"
+        # - git config --global user.email "17640@student.vgu.edu.vn"
+        # - git config --global user.name "minhquanvus1"
+        # - aws ssm get-parameter --name myPrivateKey --with-decryption | jq -r '.Parameter | .Value' > ~/.ssh/id_ed25519
+        # - chmod 600 ~/.ssh/id_ed25519
+        # - eval "$(ssh-agent -s)"
         
-        - cat ~/.ssh/id_ed25519
-        - ssh-add ~/.ssh/id_ed25519
+        # - cat ~/.ssh/id_ed25519
+        # - ssh-add ~/.ssh/id_ed25519
         - git clone git@github.com:Team-95-AWS-Modernize-Web-App-on-Cloud/Kubernetes-Deployment.git
         - cd Kubernetes-Deployment
         - git remote -v
