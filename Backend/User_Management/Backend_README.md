@@ -606,4 +606,4 @@ Quan Tran
 
 ## Acknowledgements
 
-Thanks to the fantastic team at Udacity for their excellent Full Stack Web Development Nanodegree Program that provides me the necessary knowledge to implement this app Full Stack.
+Thanks to the fantastic team at Udacity for their excellent Full Stack Web Development Nanodegree Program that provides me the necessary knowledge to implement this app Full Stack
